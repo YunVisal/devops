@@ -1,0 +1,44 @@
+name: "Initial Service Deployment Setup"
+
+on:
+  workflow_dispatch:
+    inputs:
+      app_name:
+        description: "the application name"
+        required: true
+
+env:
+  BASE_PATH: ${{env.BASE_PATH}}
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: start ssh-agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_KEY }}
+
+      - name: add host key
+        run: ssh-keyscan -H -t rsa "${{ secrets.INSTANCE_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: create service account
+        env:
+          APP_NAME: ${{ inputs.app_name }}
+        run: ssh "${{ secrets.INSTANCE_USER }}@${{ secrets.INSTANCE_HOST }}" "sudo useradd --system --home ${{env.BASE_PATH}}/${APP_NAME} --shell /usr/sbin/nologin svc_${APP_NAME}"
+
+      - name: create source code folder
+        env:
+          APP_NAME: ${{ inputs.app_name }}
+          SERVICE_ACCOUNT: svc_${{ inputs.app_name }}
+        run: |
+          ssh "${{ secrets.INSTANCE_USER }}@${{ secrets.INSTANCE_HOST }}" "bash -s" <<EOF
+          set -euo pipefail
+          APP_NAME="$APP_NAME"
+          SERVICE_ACCOUNT="$SERVICE_ACCOUNT"
+          sudo mkdir -p "${{env.BASE_PATH}}/${APP_NAME}/releases" "${{env.BASE_PATH}}/${APP_NAME}/current"
+          sudo chown -R ${SERVICE_ACCOUNT}:appadmins ${{env.BASE_PATH}}/${APP_NAME}
+          sudo find ${{env.BASE_PATH}}/${APP_NAME} -type d -exec chmod 750 {} \;
+          sudo find ${{env.BASE_PATH}}/${APP_NAME} -type f -exec chmod 640 {} \;
+          sudo find ${{env.BASE_PATH}}/${APP_NAME} -type d -exec chmod g+s {} \;
+          EOF
