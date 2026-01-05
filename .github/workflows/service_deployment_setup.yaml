@@ -8,7 +8,7 @@ on:
         required: true
 
 env:
-  BASE_PATH: ${{env.BASE_PATH}}
+  BASE_PATH: ${{ vars.BASE_PATH }}
 
 jobs:
   setup:
@@ -25,7 +25,7 @@ jobs:
       - name: create service account
         env:
           APP_NAME: ${{ inputs.app_name }}
-        run: ssh "${{ secrets.INSTANCE_USER }}@${{ secrets.INSTANCE_HOST }}" "sudo useradd --system --home ${{env.BASE_PATH}}/${APP_NAME} --shell /usr/sbin/nologin svc_${APP_NAME}"
+        run: ssh "${{ secrets.INSTANCE_USER }}@${{ secrets.INSTANCE_HOST }}" "sudo useradd --system --home ${BASE_PATH}/${APP_NAME} --shell /usr/sbin/nologin svc_${APP_NAME}"
 
       - name: create source code folder
         env:
@@ -36,9 +36,10 @@ jobs:
           set -euo pipefail
           APP_NAME="$APP_NAME"
           SERVICE_ACCOUNT="$SERVICE_ACCOUNT"
-          sudo mkdir -p "${{env.BASE_PATH}}/${APP_NAME}/releases" "${{env.BASE_PATH}}/${APP_NAME}/current"
-          sudo chown -R ${SERVICE_ACCOUNT}:appadmins ${{env.BASE_PATH}}/${APP_NAME}
-          sudo find ${{env.BASE_PATH}}/${APP_NAME} -type d -exec chmod 750 {} \;
-          sudo find ${{env.BASE_PATH}}/${APP_NAME} -type f -exec chmod 640 {} \;
-          sudo find ${{env.BASE_PATH}}/${APP_NAME} -type d -exec chmod g+s {} \;
+          BASE_PATH="${BASE_PATH}"
+          sudo mkdir -p "${BASE_PATH}/${APP_NAME}/releases" "${BASE_PATH}/${APP_NAME}/current"
+          sudo chown -R ${SERVICE_ACCOUNT}:appadmins "${BASE_PATH}/${APP_NAME}"
+          sudo find "${BASE_PATH}/${APP_NAME}" -type d -exec chmod 750 {} \;
+          sudo find "${BASE_PATH}/${APP_NAME}" -type f -exec chmod 640 {} \;
+          sudo find "${BASE_PATH}/${APP_NAME}" -type d -exec chmod g+s {} \;
           EOF
