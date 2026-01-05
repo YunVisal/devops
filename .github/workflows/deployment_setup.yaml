@@ -38,13 +38,11 @@ jobs:
             echo "BASE_PATH is empty. Stopping setup."
             exit 1
           fi
-          TARGET="${BASE_PATH}/${APP_NAME}"
-          echo "Checking ${BASE_PATH}/${APP_NAME}"
           if [ -d "${BASE_PATH}/${APP_NAME}" ]; then
-            echo "App name = ${BASE_PATH}/${APP_NAME} already exists."
+            echo "${APP_NAME} already exists."
             exit 1
           fi
-          echo "App name = ${BASE_PATH}/${APP_NAME} is available."
+          echo "${APP_NAME} is available."
           EOF
 
       - name: create service account
