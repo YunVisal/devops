@@ -16,4 +16,4 @@ jobs:
         run: ssh-keyscan -H -t rsa "${{ secrets.INSTANCE_HOST }}" >> ~/.ssh/known_hosts
 
       - name: ssh into server
-        run: ssh "${{ secrets.INSTANCE_USER }}@${{ secrets.INSTANCE_HOST }}" "ls -la"
+        run: ssh "${{ secrets.INSTANCE_USER }}@${{ secrets.INSTANCE_HOST }}" "whoami"
