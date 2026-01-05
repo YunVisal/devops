@@ -22,6 +22,22 @@ jobs:
       - name: add host key
         run: ssh-keyscan -H -t rsa "${{ secrets.INSTANCE_HOST }}" >> ~/.ssh/known_hosts
 
+      - name: check if app exists
+        env:
+          APP_NAME: ${{ inputs.app_name }}
+        run: |
+          ssh "${{ secrets.INSTANCE_USER }}@${{ secrets.INSTANCE_HOST }}" "bash -s" <<EOF
+          set -euo pipefail
+          BASE_PATH="${BASE_PATH}"
+          APP_NAME="${APP_NAME}"
+          TARGET="${BASE_PATH}/${APP_NAME}"
+          if [ -d "${TARGET}" ]; then
+            echo "App name = ${TARGET} already exists."
+            exit 1
+          fi
+          echo "App name = ${TARGET} is available."
+          EOF
+
       - name: create service account
         env:
           APP_NAME: ${{ inputs.app_name }}
