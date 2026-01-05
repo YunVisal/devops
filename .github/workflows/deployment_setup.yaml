@@ -1,4 +1,4 @@
-name: "Initial Service Deployment Setup"
+name: "Initial Deployment Setup"
 
 on:
   workflow_dispatch:
