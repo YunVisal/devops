@@ -39,12 +39,12 @@ jobs:
             exit 1
           fi
           TARGET="${BASE_PATH}/${APP_NAME}"
-          echo "Checking ${TARGET}"
-          if [ -d "${TARGET}" ]; then
-            echo "App name = ${TARGET} already exists."
+          echo "Checking ${BASE_PATH}/${APP_NAME}"
+          if [ -d "${BASE_PATH}/${APP_NAME}" ]; then
+            echo "App name = ${BASE_PATH}/${APP_NAME} already exists."
             exit 1
           fi
-          echo "App name = ${TARGET} is available."
+          echo "App name = ${BASE_PATH}/${APP_NAME} is available."
           EOF
 
       - name: create service account
