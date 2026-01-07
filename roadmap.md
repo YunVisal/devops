@@ -1,0 +1,7 @@
+- dummy echo job (OK) -> echo.yaml
+- ssh (OK) -> ssh.yaml
+- create deployment folder (OK) -> deployment_setup.yaml
+- list deployment folder
+- add secret file
+- deploy service project
+- deploy static project

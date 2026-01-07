@@ -1,0 +1,26 @@
+name: "List Deployment Setup"
+
+on:
+  workflow_dispatch:
+
+env:
+  BASE_PATH: ${{ vars.BASE_PATH }}
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: start ssh-agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_KEY }}
+
+      - name: add host key
+        run: ssh-keyscan -H -t rsa "${{ secrets.INSTANCE_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: list all deploy application
+        run: |
+          ssh "${{ secrets.INSTANCE_USER }}@${{ secrets.INSTANCE_HOST }}" "bash -s" <<EOF
+          cd ${BASE_PATH}
+          ls -la
+          EOF
